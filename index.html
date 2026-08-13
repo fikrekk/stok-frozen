@@ -15,27 +15,39 @@ const SUPABASE_URL="https://wnrpjobkljjzjahknbxt.supabase.co",SUPABASE_ANON_KEY=
 const st=n=>n===0?["Kosong","empty"]:n<=5?["Menipis","low"]:["Aman","ok"];const fd=x=>new Date(x).toLocaleDateString("id-ID",{day:"2-digit",month:"2-digit",year:"numeric"}),ft=x=>new Date(x).toLocaleTimeString("id-ID");
 function configured(){return !SUPABASE_URL.includes("PASTE_")&&!SUPABASE_ANON_KEY.includes("PASTE_")}
 async function login(e){
- e.preventDefault();
- const emailInput=document.getElementById("email");
- const passwordInput=document.getElementById("password");
- const errorBox=document.getElementById("error");
- errorBox.textContent="";
- if(!configured()){errorBox.textContent="Hubungkan Supabase terlebih dahulu.";return}
- const {data,error:authError}=await sb.auth.signInWithPassword({email:emailInput.value.trim(),password:passwordInput.value});
- if(authError){errorBox.textContent=authError.message;return}
- await start(data.user);
+    e.preventDefault();
+
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const errorBox = document.getElementById("error");
+
+    errorBox.textContent = "";
+
+    if(!configured()){
+        errorBox.textContent = "Hubungkan Supabase terlebih dahulu.";
+        return;
+    }
+
+    const { data, error } = await sb.auth.signInWithPassword({
+        email: emailInput.value.trim(),
+        password: passwordInput.value
+    });
+
+    if(error){
+        errorBox.textContent = error.message;
+        return;
+    }
+
+    await start(data.user);
 }
 async function start(u){
- document.getElementById("login").classList.add("hidden");
- document.getElementById("app").classList.remove("hidden");
- document.getElementById("who").textContent=u.email;
- await load();
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    document.getElementById("who").textContent = u.email;
+
+    await load();
 }
-async function logout(){
- await sb.auth.signOut();
- document.getElementById("app").classList.add("hidden");
- document.getElementById("login").classList.remove("hidden");
-}
+async function logout(){await sb.auth.signOut();app.classList.add("hidden");login.classList.remove("hidden")}
 async function load(){let a=await Promise.all([sb.from("products").select("*").order("name"),sb.from("stock_movements").select("*").order("created_at",{ascending:false})]);if(a[0].error||a[1].error){alert((a[0].error||a[1].error).message);return}products=a[0].data||[];moves=a[1].data||[];dashboard();renderInventory();filters();report()}
 function page(p){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(p).classList.add("active");nd.classList.toggle("active",p==="dashboard");ni.classList.toggle("active",p==="inventory");nr.classList.toggle("active",p==="report");title.textContent=p==="dashboard"?"Dashboard Stok Frozen":p==="inventory"?"Persediaan Frozen":"Laporan Perubahan Stok";if(p==="report"){filters();report()}}
 function dashboard(){n.textContent=products.length;s.textContent=products.reduce((a,x)=>a+x.stock,0);l.textContent=products.filter(x=>x.stock>0&&x.stock<=5).length;e.textContent=products.filter(x=>x.stock===0).length;db.innerHTML=products.map(x=>{let q=st(x.stock);return `<tr><td><div class="product"><div class="thumb">${x.icon}</div>${x.name}</div></td><td>${x.category}</td><td>${x.stock} pcs</td><td><span class="badge ${q[1]}">${q[0]}</span></td></tr>`}).join("");attention.innerHTML=products.filter(x=>x.stock<=5).sort((a,b)=>a.stock-b.stock).map(x=>`<p><b>${x.icon} ${x.name}</b><br><small>${x.stock} pcs — ${st(x.stock)[0]}</small></p>`).join("")||"<p>Semua stok aman.</p>"}
