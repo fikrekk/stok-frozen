@@ -11,7 +11,7 @@
 </main></div>
 <div id="modal" class="modal"><div class="box"><div class="top"><h3>Perubahan Stok</h3><button class="btn secondary" onclick="closeModal()">Tutup</button></div><div id="sel" class="selected"></div><div class="eyebrow">Jenis Perubahan</div><div class="types"><button id="dec" class="active" onclick="typeChange('dec')">− Pengurangan</button><button id="inc" onclick="typeChange('inc')">＋ Penambahan</button></div><label>Jumlah Stok</label><input id="qty" class="qty" type="number" min="1" value="1" oninput="preview()"><div class="preview"><span>Stok setelah perubahan</span><b id="after">0 pcs</b></div><div class="actions"><button class="btn secondary" onclick="closeModal()">Batal</button> <button class="btn primary" onclick="saveChange()">Simpan Perubahan</button></div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
-const SUPABASE_URL="https://wnrpjobkljjzjahknbxt.supabase.co/rest/v1/",SUPABASE_ANON_KEY="sb_publishable_0h_CNBc6ynGaOAkwCMg6wA_FAS1pa1e";let sb,products=[],moves=[],selected=0,ctype="dec";
+const SUPABASE_URL="https://wnrpjobkljjzjahknbxt.supabase.co",SUPABASE_ANON_KEY="sb_publishable_0h_CNBc6ynGaOAkwCMg6wA_FAS1pa1e";let sb,products=[],moves=[],selected=0,ctype="dec";
 const st=n=>n===0?["Kosong","empty"]:n<=5?["Menipis","low"]:["Aman","ok"];const fd=x=>new Date(x).toLocaleDateString("id-ID",{day:"2-digit",month:"2-digit",year:"numeric"}),ft=x=>new Date(x).toLocaleTimeString("id-ID");
 function configured(){return !SUPABASE_URL.includes("PASTE_")&&!SUPABASE_ANON_KEY.includes("PASTE_")}
 async function login(e){
